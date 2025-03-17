@@ -21,16 +21,13 @@ app.get('/books/:id', (req, res) => {
 });
 
 app.post('/books', (req, res) => {
-    const { id, title, details } = req.body;
-    
-    if (!id || !title || !Array.isArray(details)) {
-        return res.status(400).json({ error: "Missing required book details" });
+    let book = req.body;
+    if (!book.id || !book.title || !book.details) {
+        res.status(400).send("Missing fields");
+        return;
     }
-    
-    const newBook = { id, title, details };
-    books.push(newBook);
-    
-    res.status(201).json(newBook);
+    books.push(book);
+    res.status(201).json(book);
 });
 
 app.put('/books/:id', (req, res) => {
@@ -46,10 +43,12 @@ app.put('/books/:id', (req, res) => {
 });
 
 app.delete('/books/:id', (req, res) => {
-    const bookIndex = books.findIndex(b => b.id === req.params.id);
-    if (bookIndex === -1) return res.status(404).json({ error: "Book not found" });
-
-    books.splice(bookIndex, 1);
+    let index = books.findIndex(b => b.id === req.params.id);
+    if (index === -1) {
+        res.status(404).send("Not found");
+        return;
+    }
+    books.splice(index, 1);
     res.status(204).send();
 });
 
@@ -79,5 +78,5 @@ app.delete('/books/:id/details/:detailId', (req, res) => {
 });
 
 app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
+    console.log("Server running");
 });
